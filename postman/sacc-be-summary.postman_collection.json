@@ -1,0 +1,61 @@
+{
+  "info": {
+    "_postman_id": "5f88fe07-8247-45e7-8f56-8d1c44c95f5f",
+    "name": "sacc-be Public Summary API",
+    "description": "Postman collection for the public summary endpoint (events and members counts).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Public Summary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/summary",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "summary"
+          ]
+        },
+        "description": "Public endpoint that returns total number of events and members."
+      },
+      "response": [
+        {
+          "name": "200 OK - Public Summary",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/summary",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "summary"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"numberOfEvents\": 42,\n    \"numberOfMembers\": 135\n  }\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "apiBaseUrl",
+      "value": "http://localhost:1005/api/v1"
+    }
+  ]
+}

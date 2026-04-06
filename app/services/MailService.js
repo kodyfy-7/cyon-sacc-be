@@ -1,21 +1,47 @@
 const nodemailer = require("nodemailer");
 const Postal = require("@atech/postal");
 
+const smtpHost = process.env.SMTP_HOST || process.env.MAIL_HOST;
+const smtpPort = Number(process.env.SMTP_PORT || process.env.MAIL_PORT || 465);
+const smtpUser = process.env.SMTP_USER || process.env.MAIL_USERNAME;
+const smtpPassword = process.env.SMTP_PASSWORD || process.env.MAIL_PASSWORD;
+const mailEncryption = (process.env.MAIL_ENCRYPTION || "").toLowerCase();
+
+const shouldUseSecureSmtp =
+  String(process.env.SMTP_SECURE || "").toLowerCase() === "true" ||
+  smtpPort === 465 ||
+  mailEncryption === "ssl";
+
 // SMTP Transporter Setup
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: true, // Use SSL
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD
-  }
-});
+const transporter =
+  smtpHost && smtpUser && smtpPassword
+    ? nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: shouldUseSecureSmtp,
+      auth: {
+        user: smtpUser,
+        pass: smtpPassword
+      }
+    })
+    : null;
 
 exports.sendMail = async (recipient, subject, emailBody) => {
   try {
-    const fromEmailAddress = `"ayo" <${process.env.EMAIL_FROM}>`;
-    if (process.env.EMAIL_SERVER === "postal") {
+    const fromEmail = process.env.EMAIL_FROM || process.env.MAIL_FROM_ADDRESS || smtpUser;
+    const fromName =
+      process.env.EMAIL_FROM_NAME ||
+      process.env.MAIL_FROM_NAME ||
+      process.env.APP_NAME ||
+      "SACC";
+    const fromEmailAddress = `"${fromName}" <${fromEmail}>`;
+    const emailServer = (process.env.EMAIL_SERVER || "smtp").toLowerCase();
+
+    if (!recipient) {
+      throw new Error("Recipient email is required");
+    }
+
+    if (emailServer === "postal") {
       const client = new Postal.Client(
         process.env.POSTAL_USER,
         process.env.POSTAL_SECRET
@@ -52,6 +78,12 @@ exports.sendMail = async (recipient, subject, emailBody) => {
         throw error;
       }
     } else {
+      if (!transporter) {
+        throw new Error(
+          "SMTP is not configured. Set SMTP_* or MAIL_* environment variables."
+        );
+      }
+
       return transporter.sendMail({
         from: fromEmailAddress,
         to: recipient,

@@ -46,9 +46,11 @@ bullRedisClient.on("reconnecting", (delay) => {
 
 // Define your job queues - Use bullRedisClient here
 const eventQueue = new Bull("event", { redis: bullRedisClient });
+const birthdayQueue = new Bull("birthday-reminder", { redis: bullRedisClient });
 // ... (rest of your code: checkConnection, setupQueueListeners, initQueues)
 
 module.exports = {
   redisClient, // Export the main Redis client (if your application needs it)
-  eventQueue
+  eventQueue,
+  birthdayQueue,
 };

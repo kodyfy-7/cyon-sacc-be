@@ -253,6 +253,40 @@ const validateUpdatePosition = () => {
   ];
 };
 
+const validateContactUs = () => {
+  return [
+    body("name")
+      .notEmpty()
+      .withMessage("Name is required")
+      .isString()
+      .withMessage("Name must be a string"),
+
+    body("email")
+      .notEmpty()
+      .withMessage("Email is required")
+      .isEmail()
+      .withMessage("Email must be a valid email address")
+      .normalizeEmail(),
+
+    body("phoneNumber")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Phone number must be a string"),
+
+    body("subject")
+      .notEmpty()
+      .withMessage("Subject is required")
+      .isString()
+      .withMessage("Subject must be a string"),
+
+    body("message")
+      .notEmpty()
+      .withMessage("Message is required")
+      .isString()
+      .withMessage("Message must be a string")
+  ];
+};
+
 module.exports = {
   validate,
   okvalidate,
@@ -265,5 +299,6 @@ module.exports = {
   validateUpdateMember,
   validateMakeAdmin,
   validateCreatePosition,
-  validateUpdatePosition
+  validateUpdatePosition,
+  validateContactUs
 };
