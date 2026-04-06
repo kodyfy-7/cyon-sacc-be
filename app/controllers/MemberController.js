@@ -109,13 +109,26 @@ exports.createMember = async (req, res) => {
             dateOfBirth
         } = req.body;
 
-        // Check if user exists
-        const existing = await User.findOne({ where: { email }, transaction });
-        if (existing) {
+        const normalizedEmail = email ? String(email).trim().toLowerCase() : null;
+
+        // Check if user exists by email (when provided)
+        if (normalizedEmail) {
+            const existingByEmail = await User.findOne({ where: { email: normalizedEmail }, transaction });
+            if (existingByEmail) {
+                await transaction.rollback();
+                return res.status(409).json({
+                    success: false,
+                    message: "A user with this email already exists."
+                });
+            }
+        }
+
+        const existingByPhone = await User.findOne({ where: { phoneNumber }, transaction });
+        if (existingByPhone) {
             await transaction.rollback();
             return res.status(409).json({
                 success: false,
-                message: "A user with this email already exists."
+                message: "A user with this phone number already exists."
             });
         }
 
@@ -125,7 +138,7 @@ exports.createMember = async (req, res) => {
 
         // Create user and member together
         const user = await User.create(
-            { name, email, password: hashed, phoneNumber },
+            { name, email: normalizedEmail, password: hashed, phoneNumber },
             { transaction }
         );
 

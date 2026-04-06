@@ -20,7 +20,7 @@ const User = postgresDb.define(
 
         email: {
             type: Sequelize.STRING,
-            allowNull: false,
+            allowNull: true,
             unique: true
         },
 

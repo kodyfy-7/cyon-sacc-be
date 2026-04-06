@@ -79,8 +79,7 @@ const validateRegister = () => {
       .withMessage("Name must be a string"),
 
     body("email")
-      .notEmpty()
-      .withMessage("Email is required")
+      .optional({ nullable: true, checkFalsy: true })
       .isEmail()
       .withMessage("Email must be a valid email address")
       .normalizeEmail(),
@@ -92,7 +91,8 @@ const validateRegister = () => {
       .withMessage("Password must be at least 8 characters"),
 
     body("phoneNumber")
-      .optional({ nullable: true })
+      .notEmpty()
+      .withMessage("Phone number is required")
       .isString()
       .withMessage("Phone number must be a string"),
 
@@ -118,11 +118,22 @@ const validateRegister = () => {
 const validateLogin = () => {
   return [
     body("email")
-      .notEmpty()
-      .withMessage("Email is required")
+      .optional({ nullable: true, checkFalsy: true })
       .isEmail()
       .withMessage("Email must be a valid email address")
       .normalizeEmail(),
+
+    body("phoneNumber")
+      .optional({ nullable: true, checkFalsy: true })
+      .isString()
+      .withMessage("Phone number must be a string"),
+
+    body().custom((value) => {
+      if (!value.email && !value.phoneNumber) {
+        throw new Error("Either email or phoneNumber is required");
+      }
+      return true;
+    }),
 
     body("password")
       .notEmpty()
@@ -149,8 +160,7 @@ const validateCreateMember = () => {
       .withMessage("Name must be a string"),
 
     body("email")
-      .notEmpty()
-      .withMessage("Email is required")
+      .optional({ nullable: true, checkFalsy: true })
       .isEmail()
       .withMessage("Email must be a valid email address")
       .normalizeEmail(),
@@ -162,7 +172,8 @@ const validateCreateMember = () => {
       .withMessage("Password must be at least 8 characters"),
 
     body("phoneNumber")
-      .optional({ nullable: true })
+      .notEmpty()
+      .withMessage("Phone number is required")
       .isString()
       .withMessage("Phone number must be a string"),
 

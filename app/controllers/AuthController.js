@@ -2,6 +2,7 @@
 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 const errorHandler = require("../../middleware/errorHandler");
 const postgresDb = require("../../database/PostgresDb");
 const User = require("../../models/User");
@@ -37,19 +38,32 @@ exports.register = async (req, res) => {
             dateOfBirth
         } = req.body;
 
-        const existing = await User.findOne({ where: { email }, transaction });
-        if (existing) {
+        const normalizedEmail = email ? String(email).trim().toLowerCase() : null;
+
+        if (normalizedEmail) {
+            const existingByEmail = await User.findOne({ where: { email: normalizedEmail }, transaction });
+            if (existingByEmail) {
+                await transaction.rollback();
+                return res.status(409).json({
+                    success: false,
+                    message: "A user with this email already exists."
+                });
+            }
+        }
+
+        const existingByPhone = await User.findOne({ where: { phoneNumber }, transaction });
+        if (existingByPhone) {
             await transaction.rollback();
             return res.status(409).json({
                 success: false,
-                message: "A user with this email already exists."
+                message: "A user with this phone number already exists."
             });
         }
 
         const hashed = await bcrypt.hash(password, SALT_ROUNDS);
 
         const user = await User.create(
-            { name, email, password: hashed, phoneNumber },
+            { name, email: normalizedEmail, password: hashed, phoneNumber },
             { transaction }
         );
 
@@ -94,16 +108,24 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, phoneNumber, password } = req.body;
+        const normalizedEmail = email ? String(email).trim().toLowerCase() : null;
+
+        const identifierWhere = [];
+        if (normalizedEmail) identifierWhere.push({ email: normalizedEmail });
+        if (phoneNumber) identifierWhere.push({ phoneNumber });
 
         const user = await User.findOne({
-            where: { email, isActive: true }
+            where: {
+                isActive: true,
+                [Op.or]: identifierWhere
+            }
         });
 
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid email or password."
+                message: "Invalid credentials or password."
             });
         }
 
@@ -111,7 +133,7 @@ exports.login = async (req, res) => {
         if (!passwordMatch) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid email or password."
+                message: "Invalid credentials or password."
             });
         }
 
