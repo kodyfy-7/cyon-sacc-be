@@ -1,0 +1,6 @@
+node_modules
+.env
+notes.txt
+yarn.lock
+merged.txt
+kept*

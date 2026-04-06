@@ -1,0 +1,583 @@
+{
+  "info": {
+    "_postman_id": "6f951091-cb68-4ff1-829d-f6f8a72d8387",
+    "name": "sacc-be API",
+    "description": "Importable Postman collection for the current sacc-be API.\n\nVariables used:\n- {{baseUrl}}: application base URL\n- {{apiBaseUrl}}: API prefix, defaults to {{baseUrl}}/api/v1\n- {{accessToken}}: standard authenticated user token\n- {{adminAccessToken}}: administrator token for admin-protected routes\n- {{refreshToken}}: refresh token from login/register\n- {{memberId}}, {{eventId}}, {{positionId}}: IDs to reuse across requests\n- {{queueKey}}: basic auth password for queue dashboard\n\nNotes:\n- Public event routes: GET /events and GET /events/:eventId\n- Protected member self route: GET /members/me uses normal bearer auth\n- Admin-only routes require an access token whose JWT payload contains adminId\n- Upload endpoint accepts multipart/form-data with file field name: file",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health And Utility",
+      "item": [
+        {
+          "name": "Root Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Basic root health endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "Test Interactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/test/interactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test", "interactions"]
+            },
+            "description": "Utility test endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "Root Url Verification",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"url_verification\",\n  \"challenge\": \"sample-challenge-token\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Returns the raw challenge string when type=url_verification."
+          },
+          "response": []
+        },
+        {
+          "name": "Queue Dashboard",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "admin", "type": "string" },
+                { "key": "password", "value": "{{queueKey}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/queues",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "queues"]
+            },
+            "description": "Bull Board HTML dashboard protected with basic auth."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.accessToken) pm.environment.set('accessToken', json.data.accessToken);",
+                  "if (json?.data?.refreshToken) pm.environment.set('refreshToken', json.data.refreshToken);",
+                  "if (json?.data?.member?.id) pm.environment.set('memberId', json.data.member.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"StrongPass123\",\n  \"phoneNumber\": \"08012345678\",\n  \"gender\": \"female\",\n  \"outstation\": \"Lagos\",\n  \"dateOfBirth\": \"1995-03-14\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/auth/register",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registers a user and linked member profile. Saves accessToken, refreshToken, memberId to environment when successful."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.accessToken) pm.environment.set('accessToken', json.data.accessToken);",
+                  "if (json?.data?.refreshToken) pm.environment.set('refreshToken', json.data.refreshToken);",
+                  "if (json?.data?.administrator?.id && json?.data?.accessToken) pm.environment.set('adminAccessToken', json.data.accessToken);",
+                  "if (json?.data?.member?.id) pm.environment.set('memberId', json.data.member.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"StrongPass123\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/auth/login",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticates user. If the account is an administrator, the returned access token is also saved as {{adminAccessToken}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.accessToken) pm.environment.set('accessToken', json.data.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/auth/refresh",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Exchanges a refresh token for a new access token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/members/me",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members", "me"]
+            },
+            "description": "Returns the currently logged-in member profile with user and administrator relations. Uses a normal authenticated user token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Members",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/members?page=1&perPage=25&sort=createdAt:desc&search=jane&gender=female&isAdmin=true",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "perPage", "value": "25" },
+                { "key": "sort", "value": "createdAt:desc" },
+                { "key": "search", "value": "jane" },
+                { "key": "gender", "value": "female" },
+                { "key": "isAdmin", "value": "true" }
+              ]
+            },
+            "description": "Admin-only. Lists members with optional filters and pagination."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.id) pm.environment.set('memberId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Member\",\n  \"email\": \"john.member@example.com\",\n  \"password\": \"StrongPass123\",\n  \"phoneNumber\": \"08000000000\",\n  \"gender\": \"male\",\n  \"outstation\": \"Abuja\",\n  \"dateOfBirth\": \"1992-08-21\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/members",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members"]
+            },
+            "description": "Admin-only. Creates linked user and member records."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/members/{{memberId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members", "{{memberId}}"]
+            },
+            "description": "Admin-only. Fetches a member by ID with relations."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Member Updated\",\n  \"phoneNumber\": \"08011112222\",\n  \"gender\": \"male\",\n  \"outstation\": \"Port Harcourt\",\n  \"dateOfBirth\": \"1992-08-21\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/members/{{memberId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members", "{{memberId}}"]
+            },
+            "description": "Admin-only. Updates user and/or member fields."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Member",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/members/{{memberId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members", "{{memberId}}"]
+            },
+            "description": "Admin-only. Soft-deletes the member, related user, and related administrator record if present."
+          },
+          "response": []
+        },
+        {
+          "name": "Make Administrator",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"positionId\": \"{{positionId}}\",\n  \"isSuper\": false\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/members/{{memberId}}/admin",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members", "{{memberId}}", "admin"]
+            },
+            "description": "Admin-only. Promotes a member to administrator or updates their admin position."
+          },
+          "response": []
+        },
+        {
+          "name": "Unmake Administrator",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/members/{{memberId}}/admin",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["members", "{{memberId}}", "admin"]
+            },
+            "description": "Admin-only. Removes administrator status from the member."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get All Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/events?page=1&perPage=12&sort=createdAt:desc&search=conference&name=Annual%20Summit",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["events"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "perPage", "value": "12" },
+                { "key": "sort", "value": "createdAt:desc" },
+                { "key": "search", "value": "conference" },
+                { "key": "name", "value": "Annual Summit" }
+              ]
+            },
+            "description": "Public. Lists events with pagination and optional search/filtering. Suitable for website event listing pages."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json?.data?.id) pm.environment.set('eventId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Annual Summit 2026\",\n  \"fileUrl\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"description\": \"Public annual summit event for members and guests.\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/events",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["events"]
+            },
+            "description": "Admin-only. Creates an event. createdBy and updatedBy are derived from the authenticated admin token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/events/{{eventId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["events", "{{eventId}}"]
+            },
+            "description": "Public. Returns a single event by ID. Suitable for website event detail pages."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Annual Summit 2026 Updated\",\n  \"fileUrl\": \"https://res.cloudinary.com/demo/image/upload/updated.jpg\",\n  \"description\": \"Updated event description for the public website.\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/events/{{eventId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["events", "{{eventId}}"]
+            },
+            "description": "Admin-only. Updates event fields and stamps updatedBy with the authenticated admin user ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Event",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/events/{{eventId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["events", "{{eventId}}"]
+            },
+            "description": "Admin-only. Soft-deletes an event."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Upload Image To Cloudinary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": [] },
+                { "key": "folder", "value": "{{uploadFolder}}", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/uploads/image",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["uploads", "image"]
+            },
+            "description": "Protected. Uploads an image file to Cloudinary and returns a fileUrl you can store on member or event records. Use multipart/form-data and set the file field name to file."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "apiBaseUrl", "value": "{{baseUrl}}/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "adminAccessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "memberId", "value": "" },
+    { "key": "eventId", "value": "" },
+    { "key": "positionId", "value": "" },
+    { "key": "uploadFolder", "value": "sacc-be/images" },
+    { "key": "queueKey", "value": "" }
+  ]
+}

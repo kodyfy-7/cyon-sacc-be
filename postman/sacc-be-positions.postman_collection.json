@@ -1,0 +1,392 @@
+{
+  "info": {
+    "_postman_id": "f5d99b57-5547-44bb-b4e6-3e53f936ec96",
+    "name": "sacc-be Positions API",
+    "description": "Postman collection for Position CRUD endpoints only. All endpoints are admin-protected and require an admin access token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Positions",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/positions?page=1&perPage=25&sort=createdAt:desc&search=admin",
+          "host": ["{{apiBaseUrl}}"],
+          "path": ["positions"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "perPage",
+              "value": "25"
+            },
+            {
+              "key": "sort",
+              "value": "createdAt:desc"
+            },
+            {
+              "key": "search",
+              "value": "admin"
+            }
+          ]
+        },
+        "description": "Returns all positions with pagination and optional search."
+      },
+      "response": [
+        {
+          "name": "200 OK - Positions List",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions?page=1&perPage=25&sort=createdAt:desc&search=admin",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"positions\": [\n      {\n        \"id\": \"11111111-1111-1111-1111-111111111111\",\n        \"name\": \"Super Admin\",\n        \"createdAt\": \"2026-04-06T10:00:00.000Z\",\n        \"updatedAt\": \"2026-04-06T10:00:00.000Z\",\n        \"deletedAt\": null\n      }\n    ]\n  },\n  \"meta\": {\n    \"total\": 1,\n    \"page\": 1,\n    \"perPage\": 25\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Position",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json?.data?.id) pm.environment.set('positionId', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Operations Manager\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/positions",
+          "host": ["{{apiBaseUrl}}"],
+          "path": ["positions"]
+        },
+        "description": "Creates a new position."
+      },
+      "response": [
+        {
+          "name": "201 Created - Position",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Position created successfully.\",\n  \"data\": {\n    \"id\": \"22222222-2222-2222-2222-222222222222\",\n    \"name\": \"Operations Manager\",\n    \"createdAt\": \"2026-04-06T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-06T10:05:00.000Z\"\n  }\n}"
+        },
+        {
+          "name": "409 Conflict - Duplicate Name",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions"]
+            }
+          },
+          "status": "Conflict",
+          "code": 409,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Position already exists\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Position By Id",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+          "host": ["{{apiBaseUrl}}"],
+          "path": ["positions", "{{positionId}}"]
+        },
+        "description": "Fetches one position by id."
+      },
+      "response": [
+        {
+          "name": "200 OK - Position",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions", "{{positionId}}"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"22222222-2222-2222-2222-222222222222\",\n    \"name\": \"Operations Manager\",\n    \"createdAt\": \"2026-04-06T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-06T10:05:00.000Z\",\n    \"deletedAt\": null\n  }\n}"
+        },
+        {
+          "name": "404 Not Found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions", "{{positionId}}"]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Position not found\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Position",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Operations Lead\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+          "host": ["{{apiBaseUrl}}"],
+          "path": ["positions", "{{positionId}}"]
+        },
+        "description": "Updates a position name."
+      },
+      "response": [
+        {
+          "name": "200 OK - Updated",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions", "{{positionId}}"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Position updated successfully.\",\n  \"data\": {\n    \"id\": \"22222222-2222-2222-2222-222222222222\",\n    \"name\": \"Operations Lead\",\n    \"createdAt\": \"2026-04-06T10:05:00.000Z\",\n    \"updatedAt\": \"2026-04-06T10:10:00.000Z\",\n    \"deletedAt\": null\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Delete Position",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+          "host": ["{{apiBaseUrl}}"],
+          "path": ["positions", "{{positionId}}"]
+        },
+        "description": "Deletes a position if it is not assigned to any administrator."
+      },
+      "response": [
+        {
+          "name": "200 OK - Deleted",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions", "{{positionId}}"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Position deleted successfully.\"\n}"
+        },
+        {
+          "name": "409 Conflict - In Use",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/positions/{{positionId}}",
+              "host": ["{{apiBaseUrl}}"],
+              "path": ["positions", "{{positionId}}"]
+            }
+          },
+          "status": "Conflict",
+          "code": 409,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Cannot delete this position because it is assigned to one or more administrators.\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "apiBaseUrl",
+      "value": "{{baseUrl}}/api/v1"
+    },
+    {
+      "key": "adminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "positionId",
+      "value": ""
+    }
+  ]
+}
