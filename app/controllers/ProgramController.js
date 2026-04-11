@@ -44,9 +44,22 @@ exports.createYear = async (req, res) => {
     try {
         const { year, theme } = req.body;
 
-        const existing = await ProgramYear.findOne({ where: { year } });
-        if (existing) {
+        const existing = await ProgramYear.findOne({ where: { year }, paranoid: false });
+        if (existing && !existing.deletedAt) {
             return res.status(409).json({ success: false, message: `Program year ${year} already exists` });
+        }
+
+        if (existing && existing.deletedAt) {
+            if (theme !== undefined) existing.theme = theme;
+            existing.updatedBy = req.user?.id || existing.updatedBy;
+            await existing.restore();
+            await existing.save();
+
+            return res.status(200).json({
+                success: true,
+                message: `Program year ${year} restored`,
+                data: existing
+            });
         }
 
         const programYear = await ProgramYear.create({
@@ -58,6 +71,13 @@ exports.createYear = async (req, res) => {
 
         return res.status(201).json({ success: true, message: "Program year created", data: programYear });
     } catch (error) {
+        if (error?.name === "SequelizeUniqueConstraintError" || error?.original?.code === "23505") {
+            return res.status(409).json({
+                success: false,
+                message: `Program year ${req.body?.year} already exists`
+            });
+        }
+
         return res.status(500).json(await errorHandler(error, "Error creating program year", req.originalUrl));
     }
 };
@@ -73,10 +93,22 @@ exports.updateYear = async (req, res) => {
         }
 
         if (year !== undefined) {
-            const conflict = await ProgramYear.findOne({ where: { year, id: { [Op.ne]: yearId } } });
-            if (conflict) {
+            const conflict = await ProgramYear.findOne({
+                where: { year, id: { [Op.ne]: yearId } },
+                paranoid: false
+            });
+
+            if (conflict && !conflict.deletedAt) {
                 return res.status(409).json({ success: false, message: `Program year ${year} already exists` });
             }
+
+            if (conflict && conflict.deletedAt) {
+                return res.status(409).json({
+                    success: false,
+                    message: `Program year ${year} exists in archive. Restore it or choose another year`
+                });
+            }
+
             programYear.year = year;
         }
 
@@ -87,6 +119,13 @@ exports.updateYear = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "Program year updated", data: programYear });
     } catch (error) {
+        if (error?.name === "SequelizeUniqueConstraintError" || error?.original?.code === "23505") {
+            return res.status(409).json({
+                success: false,
+                message: `Program year ${req.body?.year} already exists`
+            });
+        }
+
         return res.status(500).json(await errorHandler(error, "Error updating program year", req.originalUrl));
     }
 };
