@@ -298,6 +298,94 @@ const validateContactUs = () => {
   ];
 };
 
+const validateCreateProgramYear = () => {
+  return [
+    body("year")
+      .notEmpty()
+      .withMessage("Year is required")
+      .isInt({ min: 2000, max: 2100 })
+      .withMessage("Year must be a valid 4-digit integer"),
+
+    body("theme")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Theme must be a string")
+  ];
+};
+
+const validateUpdateProgramYear = () => {
+  return [
+    body("year")
+      .optional({ nullable: true })
+      .isInt({ min: 2000, max: 2100 })
+      .withMessage("Year must be a valid 4-digit integer"),
+
+    body("theme")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Theme must be a string")
+  ];
+};
+
+const validateCreateActivity = () => {
+  return [
+    body("name")
+      .notEmpty()
+      .withMessage("Activity name is required")
+      .isString()
+      .withMessage("Activity name must be a string"),
+
+    body("sn")
+      .optional({ nullable: true })
+      .isInt({ min: 1 })
+      .withMessage("sn must be a positive integer"),
+
+    body("eventDate")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("eventDate must be a string"),
+
+    body("level")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Level must be a string"),
+
+    body("venue")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Venue must be a string")
+  ];
+};
+
+const validateUpdateActivity = () => {
+  return [
+    body("name")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Activity name must be a string"),
+
+    body("sn")
+      .optional({ nullable: true })
+      .isInt({ min: 1 })
+      .withMessage("sn must be a positive integer"),
+
+    body("eventDate")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("eventDate must be a string"),
+
+    body("level")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Level must be a string"),
+
+    body("venue")
+      .optional({ nullable: true })
+      .isString()
+      .withMessage("Venue must be a string")
+  ];
+};
+
 module.exports = {
   validate,
   okvalidate,
@@ -311,5 +399,9 @@ module.exports = {
   validateMakeAdmin,
   validateCreatePosition,
   validateUpdatePosition,
-  validateContactUs
+  validateContactUs,
+  validateCreateProgramYear,
+  validateUpdateProgramYear,
+  validateCreateActivity,
+  validateUpdateActivity
 };

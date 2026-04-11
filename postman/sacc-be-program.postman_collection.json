@@ -1,0 +1,943 @@
+{
+  "info": {
+    "_postman_id": "d4e5f6a7-b8c9-0123-defa-bc0123456789",
+    "name": "sacc-be Program of Year",
+    "description": "Program of Year endpoints.\n\nVariables used:\n- {{apiBaseUrl}}: API prefix, e.g. {{baseUrl}}/api/v1\n- {{adminAccessToken}}: administrator token for admin-protected routes\n- {{programYearId}}: saved after Create Program Year\n- {{activityId}}: saved after Add Activity",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Current Year Program (Public)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/program",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program"
+          ]
+        },
+        "description": "Public endpoint. Returns the program year record (with all activities) for the current calendar year, ordered by sn ascending."
+      },
+      "response": [
+        {
+          "name": "200 – Current year program found",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"year\": 2026,\n    \"theme\": \"Take Courage, I have overcome the world (John 16:33)\",\n    \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n    \"deletedAt\": null,\n    \"activities\": [\n      {\n        \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n        \"programYearId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n        \"sn\": 1,\n        \"name\": \"Monthly Meeting\",\n        \"eventDate\": \"18/1/2026\",\n        \"level\": \"parish\",\n        \"venue\": \"St. Anthony\",\n        \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n        \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n        \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n        \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n        \"deletedAt\": null\n      },\n      {\n        \"id\": \"c3d4e5f6-a7b8-9012-cdef-012345678902\",\n        \"programYearId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n        \"sn\": 2,\n        \"name\": \"Beginning With The Lord\",\n        \"eventDate\": \"21-23 Jan\",\n        \"level\": \"deanery/parish\",\n        \"venue\": \"Local parishes\",\n        \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n        \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n        \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n        \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n        \"deletedAt\": null\n      }\n    ]\n  }\n}"
+        },
+        {
+          "name": "404 – No program found for current year",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"No program found for year 2026\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get All Program Years",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years"
+          ]
+        },
+        "description": "Admin-only. Lists all program years ordered by year descending (without activities)."
+      },
+      "response": [
+        {
+          "name": "200 – Program years list",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"year\": 2026,\n      \"theme\": \"Take Courage, I have overcome the world (John 16:33)\",\n      \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n      \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n      \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n      \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n      \"deletedAt\": null\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Program Year",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json?.data?.id) pm.environment.set('programYearId', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"year\": 2026,\n  \"theme\": \"Take Courage, I have overcome the world (John 16:33)\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years"
+          ]
+        },
+        "description": "Admin-only. Creates a new program year. Saves programYearId to environment."
+      },
+      "response": [
+        {
+          "name": "201 – Program year created",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"year\": 2026,\n  \"theme\": \"Take Courage, I have overcome the world (John 16:33)\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"message\": \"Program year created\",\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"year\": 2026,\n    \"theme\": \"Take Courage, I have overcome the world (John 16:33)\",\n    \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n    \"deletedAt\": null\n  }\n}"
+        },
+        {
+          "name": "409 – Year already exists",
+          "status": "Conflict",
+          "code": 409,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"year\": 2026,\n  \"theme\": \"Take Courage, I have overcome the world (John 16:33)\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"Program year 2026 already exists\"\n}"
+        },
+        {
+          "name": "422 – Validation failed",
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"Missing year field\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years"
+              ]
+            }
+          },
+          "body": "{\n  \"errors\": [\n    { \"param\": \"year\", \"message\": \"Year is required\" }\n  ],\n  \"message\": \"Validation failed. Please check the provided data.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Program Year By Id",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years",
+            "{{programYearId}}"
+          ]
+        },
+        "description": "Admin-only. Returns a program year with all its activities ordered by sn ascending."
+      },
+      "response": [
+        {
+          "name": "200 – Program year with activities",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"year\": 2026,\n    \"theme\": \"Take Courage, I have overcome the world (John 16:33)\",\n    \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n    \"deletedAt\": null,\n    \"activities\": [\n      {\n        \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n        \"programYearId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n        \"sn\": 1,\n        \"name\": \"Monthly Meeting\",\n        \"eventDate\": \"18/1/2026\",\n        \"level\": \"parish\",\n        \"venue\": \"St. Anthony\",\n        \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n        \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n        \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n        \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n        \"deletedAt\": null\n      }\n    ]\n  }\n}"
+        },
+        {
+          "name": "404 – Program year not found",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"Program year not found\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Program Year",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"theme\": \"Renewed theme for 2026\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years",
+            "{{programYearId}}"
+          ]
+        },
+        "description": "Admin-only. Updates year or theme. All fields optional."
+      },
+      "response": [
+        {
+          "name": "200 – Program year updated",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"Renewed theme for 2026\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"message\": \"Program year updated\",\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"year\": 2026,\n    \"theme\": \"Renewed theme for 2026\",\n    \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-11T11:30:00.000Z\",\n    \"deletedAt\": null\n  }\n}"
+        },
+        {
+          "name": "404 – Program year not found",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"Renewed theme\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"Program year not found\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Delete Program Year",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years",
+            "{{programYearId}}"
+          ]
+        },
+        "description": "Admin-only. Soft-deletes a program year and all its activities (cascade)."
+      },
+      "response": [
+        {
+          "name": "200 – Program year deleted",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"message\": \"Program year deleted\"\n}"
+        },
+        {
+          "name": "404 – Program year not found",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"Program year not found\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Add Activity",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json?.data?.id) pm.environment.set('activityId', json.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sn\": 1,\n  \"name\": \"Monthly Meeting\",\n  \"eventDate\": \"18/1/2026\",\n  \"level\": \"parish\",\n  \"venue\": \"St. Anthony\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years",
+            "{{programYearId}}",
+            "activities"
+          ]
+        },
+        "description": "Admin-only. Adds a single activity to a program year. Saves activityId to environment. eventDate is a flexible string (e.g. '18/1/2026', 'TBA', 'Aug')."
+      },
+      "response": [
+        {
+          "name": "201 – Activity added",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sn\": 1,\n  \"name\": \"Monthly Meeting\",\n  \"eventDate\": \"18/1/2026\",\n  \"level\": \"parish\",\n  \"venue\": \"St. Anthony\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}",
+                "activities"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"message\": \"Activity added\",\n  \"data\": {\n    \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n    \"programYearId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"sn\": 1,\n    \"name\": \"Monthly Meeting\",\n    \"eventDate\": \"18/1/2026\",\n    \"level\": \"parish\",\n    \"venue\": \"St. Anthony\",\n    \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-11T10:00:00.000Z\",\n    \"deletedAt\": null\n  }\n}"
+        },
+        {
+          "name": "404 – Program year not found",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sn\": 1,\n  \"name\": \"Monthly Meeting\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}",
+                "activities"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"Program year not found\"\n}"
+        },
+        {
+          "name": "422 – Validation failed",
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventDate\": \"18/1/2026\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}",
+                "activities"
+              ]
+            }
+          },
+          "body": "{\n  \"errors\": [\n    { \"param\": \"name\", \"message\": \"Activity name is required\" }\n  ],\n  \"message\": \"Validation failed. Please check the provided data.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Activity",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"eventDate\": \"TBA\",\n  \"venue\": \"St. Bernadette\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities/{{activityId}}",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years",
+            "{{programYearId}}",
+            "activities",
+            "{{activityId}}"
+          ]
+        },
+        "description": "Admin-only. Partially updates an activity. All fields optional."
+      },
+      "response": [
+        {
+          "name": "200 – Activity updated",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventDate\": \"TBA\",\n  \"venue\": \"St. Bernadette\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities/{{activityId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}",
+                "activities",
+                "{{activityId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"message\": \"Activity updated\",\n  \"data\": {\n    \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n    \"programYearId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"sn\": 1,\n    \"name\": \"Monthly Meeting\",\n    \"eventDate\": \"TBA\",\n    \"level\": \"parish\",\n    \"venue\": \"St. Bernadette\",\n    \"createdBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"updatedBy\": \"f0e1d2c3-b4a5-6789-fedc-ba9876543210\",\n    \"createdAt\": \"2026-04-11T10:00:00.000Z\",\n    \"updatedAt\": \"2026-04-11T11:45:00.000Z\",\n    \"deletedAt\": null\n  }\n}"
+        },
+        {
+          "name": "404 – Activity not found",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventDate\": \"TBA\"\n}"
+            },
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities/{{activityId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}",
+                "activities",
+                "{{activityId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"Activity not found\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Delete Activity",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminAccessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities/{{activityId}}",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "program-years",
+            "{{programYearId}}",
+            "activities",
+            "{{activityId}}"
+          ]
+        },
+        "description": "Admin-only. Soft-deletes a single activity."
+      },
+      "response": [
+        {
+          "name": "200 – Activity deleted",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities/{{activityId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}",
+                "activities",
+                "{{activityId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": true,\n  \"message\": \"Activity deleted\"\n}"
+        },
+        {
+          "name": "404 – Activity not found",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{apiBaseUrl}}/program-years/{{programYearId}}/activities/{{activityId}}",
+              "host": [
+                "{{apiBaseUrl}}"
+              ],
+              "path": [
+                "program-years",
+                "{{programYearId}}",
+                "activities",
+                "{{activityId}}"
+              ]
+            }
+          },
+          "body": "{\n  \"success\": false,\n  \"message\": \"Activity not found\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "apiBaseUrl",
+      "value": "{{baseUrl}}/api/v1"
+    },
+    {
+      "key": "adminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "programYearId",
+      "value": ""
+    },
+    {
+      "key": "activityId",
+      "value": ""
+    }
+  ]
+}

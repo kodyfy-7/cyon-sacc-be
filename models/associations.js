@@ -4,6 +4,8 @@ const User = require("./User");
 const Member = require("./Member");
 const Administrator = require("./Administrator");
 const Position = require("./Position");
+const ProgramYear = require("./ProgramYear");
+const ProgramActivity = require("./ProgramActivity");
 
 // User <-> Member (1:1)
 if (!User.associations.member) {
@@ -45,5 +47,16 @@ module.exports = {
     User,
     Member,
     Administrator,
-    Position
+    Position,
+    ProgramYear,
+    ProgramActivity
 };
+
+// ProgramYear <-> ProgramActivity (1:N)
+if (!ProgramYear.associations.activities) {
+    ProgramYear.hasMany(ProgramActivity, { foreignKey: "programYearId", as: "activities" });
+}
+
+if (!ProgramActivity.associations.programYear) {
+    ProgramActivity.belongsTo(ProgramYear, { foreignKey: "programYearId", as: "programYear" });
+}
